@@ -52,11 +52,23 @@ struct FriendNode* createConnectionNode(int user_id) {
     newNode->next = NULL;
     return newNode;
 }
-void addConnection(int user1_id, int user2_id) {
-       if (!(user1_id) || !(user2_id)) {
-        printf("One or both users do not exist. Please add users first.\n");
+struct user* getUserById(int user_id) {
+    for (int i = 0; i < user_count; i++) 
+    {
+        if (network[i]->user_id == user_id) 
+        {
+            return network[i]; 
+        }
     }
-    
+    return NULL;
+}
+void addConnection(int user1_id, int user2_id) {
+ struct user* user1 = getUserById(user1_id);
+    struct user* user2 = getUserById(user2_id);
+    if (user1 == NULL || user2 == NULL) {
+        printf("One or both users do not exist. Please add users first.\n");
+        return;
+    }
     struct FriendNode* newNode1 = createConnectionNode(user2_id);
     newNode1->next = network[user1_id]->connections;
     network[user1_id]->connections = newNode1;
