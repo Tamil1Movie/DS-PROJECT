@@ -1,0 +1,77 @@
+#include<stdio.h>
+#include<stdlib.h>
+#define MAX_USERS 100
+struct FriendNode
+{
+    int user_id;
+    struct FriendNode* next;
+};
+struct user
+{
+    int user_id;
+    struct FriendNode* friend_list;
+};
+struct user* network[MAX_USERS];
+int user_count=0;
+struct FriendNode* createFriend(int user_id)
+{
+    struct FriendNode* newNode=(struct FriendNode*)malloc(sizeof(struct FriendNode));
+    newNode->user_id=user_id;
+    newNode->next=NULL;
+    return newNode;
+}
+void addUser(int user_id)
+{
+    int i;
+    for(i=0;i<user_count;i++)
+    {
+         if(network[i]->user_id==user_id)
+          {
+                printf("User %d is already present in the network",user_id);
+          }
+    }
+    struct user* newUser=(struct user*)malloc(sizeof(struct user));
+    newUser->user_id=user_id;
+    newUser->friend_list=NULL;
+    network[user_count++]=newUser;
+    printf("User %d added to the network \n",user_id);
+}
+void displayNetwork()
+{
+    int i;
+    printf("Current users in the network:\n");
+    for(i=0;i<user_count;i++)
+    {
+            printf("User %d\n",network[i]->user_id);
+    }
+}
+int main()
+{
+    int choice,user_id;
+    while(choice!=4)
+    {
+          printf("MENU\n");
+          printf("1.Add user\n");
+          printf("2.Display the available networks\n");
+          printf("3.Exit\n");
+          printf("Enter choice :");
+          scanf("%d",&choice);
+          switch(choice)
+          {
+                case 1:
+                    printf("Enter user id to add in network:");
+                    scanf("%d",&user_id);
+                    addUser(user_id);
+                    break;
+                case 2:
+                    displayNetwork();
+                    break;
+                case 3:
+                    printf("EXIT");
+                    return 0;
+                default:
+                    printf("INVALID CHOICE");
+          }
+    }
+    return 0;
+}
