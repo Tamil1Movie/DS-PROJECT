@@ -1,0 +1,173 @@
+#include<stdio.h>
+#include<stdlib.h>
+#define MAX_USERS 100
+struct FriendNode
+{
+    int user_id;
+    struct FriendNode* next;
+};
+struct user
+{
+    int user_id;
+    struct FriendNode* friend_list;
+    struct FriendNode* connections;
+};
+struct user* network[MAX_USERS];
+int user_count=0;
+struct Queue {
+    int items[MAX_USERS];
+    int front;
+    int rear;
+};
+struct Queue* createQueue() {
+    struct Queue* q = (struct Queue*)malloc(sizeof(struct Queue));
+    q->front = -1;
+    q->rear = -1;
+    return q;
+}
+int isEmpty(struct Queue* q) {
+    return q->rear == -1;
+}
+void enqueue(struct Queue* q, int value) {
+    if (q->rear == MAX_USERS - 1) return;  // Queue is full
+    if (isEmpty(q)) {
+        q->front = 0;
+    }
+    q->rear++;
+    q->items[q->rear] = value;
+}
+int dequeue(struct Queue* q) {
+    int item;
+    if (isEmpty(q)) return -1;
+    item = q->items[q->front];
+    q->front++;
+    if (q->front > q->rear) {
+        q->front = q->rear = -1;  // Reset queue when empty
+    }
+    return item;
+}
+void addConnection(int user1_id, int user2_id) {
+    struct Node* newNode1 = createConnectionNode(user2_id);
+    newNode1->next = network[user1_id]->connections;
+    network[user1_id]->connections = newNode1;
+
+    struct Node* newNode2 = createConnectionNode(user1_id);
+    newNode2->next = network[user2_id]->connections;
+    network[user2_id]->connections = newNode2;
+}
+void BFS(int start_user_id, int max_degree) {
+    int visited[MAX_USERS] = {0};        // Array to mark visited users
+    int degree[MAX_USERS] = {0};         // Array to keep track of degrees of separation
+    struct Queue* queue = createQueue(); // Create a queue for BFS
+
+    // Enqueue the start user and mark as visited
+    enqueue(queue, start_user_id);
+    visited[start_user_id] = 1;
+    degree[start_user_id] = 0;
+
+    printf("Users within %d degrees of separation from User %d:\n", max_degree, start_user_id);
+
+    while (!isEmpty(queue)) {
+        int current_user_id = dequeue(queue);
+        
+        // Stop if degree exceeds max_degree
+        if (degree[current_user_id] >= max_degree) continue;
+
+        // Get the current user's connections
+        struct Node* temp = network[current_user_id]->connections;
+        while (temp) {
+            int neighbor_id = temp->user_id;
+
+            if (!visited[neighbor_id]) {
+                // If neighbor has not been visited, enqueue them and mark as visited
+                enqueue(queue, neighbor_id);
+                visited[neighbor_id] = 1;
+                degree[neighbor_id] = degree[current_user_id] + 1;
+
+                // Print users within the specified degrees of separation
+                if (degree[neighbor_id] <= max_degree) {
+                    printf("User %d (Degree: %d)\n", neighbor_id, degree[neighbor_id]);
+                }
+            }
+
+            temp = temp->next;
+        }
+    }
+
+    // Free the queue memory
+    free(queue);
+}
+struct FriendNode* createFriend(int user_id)
+{
+    struct FriendNode* newNode=(struct FriendNode*)malloc(sizeof(struct FriendNode));
+    newNode->user_id=user_id;
+    newNode->next=NULL;
+    return newNode;
+}
+void addUser(int user_id)
+{
+    int i;
+    for(i=0;i<user_count;i++)
+    {
+         if(network[i]->user_id==user_id)
+          {
+                printf("User %d is already present in the network",user_id);
+          }
+    }
+    struct user* newUser=(struct user*)malloc(sizeof(struct user));
+    newUser->user_id=user_id;
+    newUser->friend_list=NULL;
+    network[user_count++]=newUser;
+    printf("User %d added to the network \n",user_id);
+}
+void displayNetwork()
+{
+    int i;
+    printf("Current users in the network:\n");
+    for(i=0;i<user_count;i++)
+    {
+            printf("User %d\n",network[i]->user_id);
+    }
+}
+int main()
+{
+    int choice,user_id;
+    while(choice!=6)
+    {
+          printf("MENU\n");
+          printf("1.Add user\n");
+          printf("2.Display the available networks\n");
+          printf("3.Exit\n");
+          printf("Enter choice :");
+          scanf("%d",&choice);
+          switch(choice)
+          {
+                case 1:
+                    printf("Enter user id to add in network:");
+                    scanf("%d",&user_id);
+                    addUser(user_id);
+                    break;
+                case 2:
+                    printf("Enter two User IDs to connect (separated by space): ");
+                    scanf("%d %d", &user1, &user2);
+                    addConnection(user1, user2);
+                    break;
+                case 3:
+                    printf("Enter the starting user ID: ");
+                    scanf("%d", &start_user_id);
+                    printf("Enter the maximum degree of separation: ");
+                    scanf("%d", &max_degree);
+                    BFS(start_user_id, max_degree);
+                    break;
+                case 4:
+                    displayNetwork();
+                    break;
+                case 5:
+                    printf("EXIT");
+                    return 0;
+                default:
+                    printf("INVALID CHOICE");
+          }
+    }
+    return 0;
+}
