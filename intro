@@ -1,14 +1,49 @@
 
 Team Member Name: DHUNUSIYA MUTHUKUMARASAMY
 Feature Name: Add a user (node) to the network.
-Purpose: [Brief description of what this feature does]
-Preconditions: [Any conditions that must be met before using this feature]
+Purpose: 
+  Adding a user (or node) to a social media network enhances the friend recommendation system by expanding connections and enabling the system to suggest relevant new friends based on factors like mutual interests, geographic proximity, and shared connections. This boosts engagement as new users interact with suggested friends, while existing users discover more potential connections, leading to a stronger, more interconnected network. The addition also enriches data available for recommendations, making future suggestions more accurate and personalized
+Preconditions: 
+  Before adding a user (node) to a social media network for friend recommendations, the user must first create a profile with basic details (e.g., name, age, interests) and agree to data privacy policies, consenting to the use of their information in the recommendation system. Ideally, the user should also provide initial connection data, such as existing friends or contacts, to enhance the relevance of early friend suggestions
 Implementation Steps:
- * Step 1: [Describe the first step of implementation]
- * Step 2: [Describe the second step of implementation]
- * ...
-Expected Outcome: [Describe what the expected result should be]
+Step 1: Define Data Structures
+Define FriendNode structure: This structure represents a node in the friend list of each user. It has two members:
+
+user_id: stores the ID of a friend.
+next: a pointer to the next friend in the list.
+Define user structure: This structure represents each user in the network. It has two members:
+
+user_id: stores the unique ID of the user.
+friend_list: a pointer to the linked list of friends (of type FriendNode).
+Create network array: Define a fixed-size array network to store pointers to user structures, representing the entire social network. Also, define an integer user_count to keep track of the number of users added.
+
+Step 2: Implement createFriend Function
+Create a friend node: Define the createFriend function, which takes a user_id as a parameter and allocates memory for a new FriendNode.
+Initialize friend node: Set the user_id of the new node and set next to NULL.
+Return node: Return the pointer to this new FriendNode.
+Step 3: Implement addUser Function
+Check for existing user: Iterate over the network array to check if the user with user_id is already in the network. If found, print a message and exit the function.
+Add new user: If the user doesn’t exist, allocate memory for a new user structure, set its user_id, and initialize its friend_list to NULL.
+Store in network: Add the new user to the network array at the current index of user_count.
+Update and notify: Increment user_count and print a message that the user has been added.
+Step 4: Implement displayNetwork Function
+Display user list: Iterate over the network array, printing each user’s user_id to display all users in the network.
+Step 5: Implement main Function
+Menu display: Implement a loop to display a menu to the user with three options: add a user, display the network, or exit.
+
+Read user choice: Use scanf to take the user’s choice and process it with a switch statement:
+
+Case 1: Calls addUser to add a user to the network.
+Case 2: Calls displayNetwork to list all users in the network.
+Case 3: Exits the program by returning 0.
+Default: Prints "INVALID CHOICE" if the choice is not in the menu.
+Loop condition: Keep looping until the user selects "Exit."
+
+This structured approach ensures the friend recommendation system has basic functionality for adding users and displaying the current network.
+Expected Outcome: 
+  The expected outcome of this program is to provide a basic social network where users can be added, and the current list of users in the network can be displayed.
+The program should allow adding unique users, prevent duplicates, and display all users added to the network, demonstrating basic social network functionality.
 Actual Outcome: [Document what actually happened during implementation]
-Status: [Completed/In Progress]
+Status: In Progress
 Notes: [Any additional notes or observations]
 If you have any more images you want me to transcribe, feel free to send them over!
