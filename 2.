@@ -1,3 +1,26 @@
+
+Team Member Name: DHUNUSIYA MUTHUKUMARASAMY
+Feature Name: Implement Breadth-First Search (BFS) to find friends within certain degrees of separation.
+Purpose: 
+  To implement a Breadth-First Search (BFS) algorithm for finding friends within certain degrees of separation, you can represent the social network as a graph. Each person is a node, and each friendship is an edge connecting two nodes. BFS is ideal here because it explores each "level" of nodes (or degrees of separation) from the starting person before moving further out.
+Preconditions: 
+ The preconditions for running the program include ensuring that the network is initialized with a maximum capacity of MAX_USERS (100 users). Users must be added to the network using the addUser() function, and each user must have a unique user_id. Connections between users can only be made if both users already exist in the network, and the connection is bidirectional. When performing BFS, the start_user_id must correspond to a valid user, and the max_degree for BFS must be a non-negative integer. The queue used in BFS should not exceed the capacity of MAX_USERS, and memory allocation for users and connections should succeed. The program also assumes valid menu inputs for user actions, such as adding users, connecting users, and performing BFS.
+
+Implementation Steps:
+Define Data Structures: Create structures for users and their connections.
+Implement Queue Operations: Implement a queue for BFS traversal.
+Add Users and Connections: Implement functions to add users and establish friendships.
+Display Network: Create a function to display the current users in the network.
+BFS Implementation: Perform BFS to find users within a specific degree of separation.
+Input Handling and Menu System: Create a menu system for interacting with the program.
+Memory Management: Ensure proper memory management by freeing allocated memory when necessary.
+Expected Outcome: 
+  The expected outcome of the Breadth-First Search (BFS) implementation for exploring friends within a certain degree of separation is that users can be added to a dynamic network, with connections established between them. The program will list all users currently in the network and, when prompted to perform BFS, will traverse the network starting from a specified user. It will explore all friends within the given degree of separation, printing users along with their respective degrees (e.g., "User X (Degree: 1)"). The BFS will stop once the maximum degree of separation is reached, and the program will ensure no user is visited more than once. The system will handle user input effectively, manage connections, and produce the expected results based on the user's interactions.
+Actual Outcome: 
+    The actual outcome of the Breadth-First Search (BFS) implementation is that the program successfully allows users to be added to the network with unique IDs, establishes bidirectional connections between users, and displays the list of all users in the network. The BFS function works correctly by starting from a given user and exploring their friends within the specified degree of separation, printing users and their degrees (e.g., "User X (Degree: 1)"). The program handles edge cases such as no users or exceeding the available network connections, ensuring no user is visited more than once and correctly printing results based on the input provided. Overall, it functions as expected, providing accurate traversal and network management.
+Status: In Progress
+Notes: [Any additional notes or observations]
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #include<stdio.h>
 #include<stdlib.h>
 #define MAX_USERS 100
