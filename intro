@@ -43,7 +43,15 @@ This structured approach ensures the friend recommendation system has basic func
 Expected Outcome: 
   The expected outcome of this program is to provide a basic social network where users can be added, and the current list of users in the network can be displayed.
 The program should allow adding unique users, prevent duplicates, and display all users added to the network, demonstrating basic social network functionality.
-Actual Outcome: [Document what actually happened during implementation]
+Actual Outcome:
+  The actual outcome of the program, after the fixes, is that it correctly adds users to the network, checking for duplicates and preventing the addition of users with the same ID. If a user is added successfully, it displays a message confirming their addition, while attempting to add a duplicate user results in a message indicating that the user is already in the network. The program also properly displays the list of users in the network, showing their IDs, and when the "Exit" option is selected, it exits gracefully with a confirmation message. Overall, the program functions as intended by handling user addition, duplication checks, and displaying the network.
+
+
+
+
+
+
+
 Status: In Progress
 Notes: [Any additional notes or observations]
 
