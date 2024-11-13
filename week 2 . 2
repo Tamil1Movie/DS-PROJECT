@@ -1,0 +1,226 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_USERS 100  
+struct FriendNode {
+    int user_id;
+    struct FriendNode* next;
+};
+struct User {
+    int user_id;
+    struct FriendNode* connections;
+};
+struct User* network[MAX_USERS];
+int user_count = 0;
+struct Queue {
+    int items[MAX_USERS];
+    int front;
+    int rear;
+};
+
+struct Queue* createQueue() {
+    struct Queue* q = (struct Queue*)malloc(sizeof(struct Queue));
+    q->front = -1;
+    q->rear = -1;
+    return q;
+}
+int isEmpty(struct Queue* q) {
+    return q->rear == -1;
+}
+void enqueue(struct Queue* q, int value) {
+    if (q->rear == MAX_USERS - 1) return;  // Queue is full
+    if (isEmpty(q)) {
+        q->front = 0;
+    }
+    q->rear++;
+    q->items[q->rear] = value;
+}
+int dequeue(struct Queue* q) {
+    int item;
+    if (isEmpty(q)) return -1;
+    item = q->items[q->front];
+    q->front++;
+    if (q->front > q->rear) {
+        q->front = q->rear = -1;  
+    }
+    return item;
+}
+
+struct User* createUser(int user_id) {
+    struct User* newUser = (struct User*)malloc(sizeof(struct User));
+    newUser->user_id = user_id;
+    newUser->connections = NULL;
+    return newUser;
+}
+void addConnection(int user1_id, int user2_id) {
+    struct FriendNode* newNode1 = (struct FriendNode*)malloc(sizeof(struct FriendNode));
+    newNode1->user_id = user2_id;
+    newNode1->next = network[user1_id]->connections;
+    network[user1_id]->connections = newNode1;
+
+    struct FriendNode* newNode2 = (struct FriendNode*)malloc(sizeof(struct FriendNode));
+    newNode2->user_id = user1_id;
+    newNode2->next = network[user2_id]->connections;
+    network[user2_id]->connections = newNode2;
+
+    printf("Connection established between User %d and User %d.\n", user1_id, user2_id);
+}
+void BFS(int start_user_id, int max_degree) {
+    int visited[MAX_USERS] = {0};        
+    int degree[MAX_USERS] = {0};         
+    struct Queue* queue = createQueue(); 
+    enqueue(queue, start_user_id);
+    visited[start_user_id] = 1;
+    degree[start_user_id] = 0;
+    printf("Users within %d degrees of separation from User %d:\n", max_degree, start_user_id);
+    while (!isEmpty(queue)) {
+        int current_user_id = dequeue(queue);
+        if (degree[current_user_id] >= max_degree) continue;
+        struct FriendNode* temp = network[current_user_id]->connections;
+        while (temp) {
+            int neighbor_id = temp->user_id;
+            if (!visited[neighbor_id]) {
+                enqueue(queue, neighbor_id);
+                visited[neighbor_id] = 1;
+                degree[neighbor_id] = degree[current_user_id] + 1;
+                if (degree[neighbor_id] <= max_degree) {
+                    printf("User %d (Degree: %d)\n", neighbor_id, degree[neighbor_id]);
+                }
+            }
+            temp = temp->next;
+        }
+    }
+    free(queue);
+}
+void DFS(int user_id, int visited[]) {
+    visited[user_id] = 1;
+    printf("User %d ", user_id);
+
+    struct FriendNode* temp = network[user_id]->connections;
+    while (temp) {
+        int neighbor_id = temp->user_id;
+        if (!visited[neighbor_id]) {
+            DFS(neighbor_id, visited);
+        }
+        temp = temp->next;
+    }
+}
+void findUserClusters() {
+    int visited[MAX_USERS] = {0};  
+    int cluster_count = 0;
+
+    for (int i = 0; i < user_count; i++) {
+        if (!visited[i]) {
+            printf("Cluster %d: ", ++cluster_count);
+            DFS(i, visited);
+            printf("\n");
+        }
+    }
+}
+int findShortestPath(int start_user_id, int target_user_id) {
+    if (start_user_id == target_user_id) return 0;
+
+    int visited[MAX_USERS] = {0};
+    int degree[MAX_USERS] = {0};  
+    struct Queue* queue = createQueue();
+
+    enqueue(queue, start_user_id);
+    visited[start_user_id] = 1;
+
+    while (!isEmpty(queue)) {
+        int current_user_id = dequeue(queue);
+        struct FriendNode* temp = network[current_user_id]->connections;
+
+        while (temp) {
+            int neighbor_id = temp->user_id;
+            if (!visited[neighbor_id]) {
+                degree[neighbor_id] = degree[current_user_id] + 1;
+                visited[neighbor_id] = 1;
+                if (neighbor_id == target_user_id) {
+                    free(queue);
+                    return degree[neighbor_id];
+                }
+
+                enqueue(queue, neighbor_id);
+            }
+            temp = temp->next;
+        }
+    }
+    free(queue);
+    return -1;  
+}
+void addUser(int user_id) {
+    for (int i = 0; i < user_count; i++) {
+        if (network[i]->user_id == user_id) {
+            printf("User %d is already present in the network\n", user_id);
+            return;
+        }
+    }
+    network[user_count++] = createUser(user_id);
+    printf("User %d added to the network\n", user_id);
+}
+void displayNetwork() {
+    printf("Current users in the network:\n");
+    for (int i = 0; i < user_count; i++) {
+        printf("User %d\n", network[i]->user_id);
+    }
+}
+int main() {
+    int choice, user_id, user1_id, user2_id, start_user_id, target_user_id, max_degree;
+
+    while (1) {
+        printf("MENU\n");
+        printf("1. Add User\n");
+        printf("2. Add Connection\n");
+        printf("3. Perform BFS\n");
+        printf("4. Find Shortest Path\n");
+        printf("5. Display Network\n");
+        printf("6. Find User Clusters\n");
+        printf("7. Exit\n");
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1:
+                printf("Enter user id to add to network: ");
+                scanf("%d", &user_id);
+                addUser(user_id);
+                break;
+            case 2:
+                printf("Enter two user IDs to connect (separated by space): ");
+                scanf("%d %d", &user1_id, &user2_id);
+                addConnection(user1_id, user2_id);
+                break;
+            case 3:
+                printf("Enter the starting user ID: ");
+                scanf("%d", &start_user_id);
+                printf("Enter the maximum degree of separation: ");
+                scanf("%d", &max_degree);
+                BFS(start_user_id, max_degree);
+                break;
+            case 4:
+                printf("Enter the starting user ID: ");
+                scanf("%d", &start_user_id);
+                printf("Enter the target user ID: ");
+                scanf("%d", &target_user_id);
+                int degree_of_separation = findShortestPath(start_user_id, target_user_id);
+                if (degree_of_separation != -1) {
+                    printf("The shortest path (degree of separation) between User %d and User %d is: %d\n", start_user_id, target_user_id, degree_of_separation);
+                } else {
+                    printf("There is no path between User %d and User %d.\n", start_user_id, target_user_id);
+                }
+                break;
+            case 5:
+                displayNetwork();
+                break;
+            case 6:
+                printf("User clusters in the network:\n");
+                findUserClusters();
+                break;
+            case 7:
+                printf("Exiting program.\n");
+                return 0;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+    return 0;
+}
